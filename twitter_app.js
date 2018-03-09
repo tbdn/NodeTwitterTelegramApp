@@ -5,7 +5,8 @@ var Twitter = new twit(config);
 
 var params = {
     q: '#Linie3 OR #Linie7 OR #Linie10 OR #Linie17',
-    result_type: 'recent'
+    result_type: 'recent',
+    tweet_mode: 'extended'
 };
 
 Twitter.get('search/tweets', params, gotData);
