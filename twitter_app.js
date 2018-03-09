@@ -8,17 +8,30 @@ var params = {
     result_type: 'recent'
 };
 
-Twitter.get('search/tweets', params, gotData);
+var knownTweets = [];
+
+function tryToGetData() {
+    console.info("Ich versuche Tweets zu suchen.");
+    Twitter.get('search/tweets', params, gotData);
+}
 
 function gotData(err, data, response) {
     var tweets = data.statuses;
     for(var i=0; i < tweets.length; i++) {
-        if(!tweets[i].retweeted_status) {
-            if(tweets[i].truncated) {
-                console.info("Tweet automatically Truncated.");
+        // Neuer Tweet ist eingetroffen
+        if(!knownTweets.includes(tweets[i].id_str)) {
+            knownTweets.push(tweets[i].id_str);
+            if(!tweets[i].retweeted_status) {
+                if(tweets[i].truncated) {
+                    console.info("Tweet automatically Truncated.");
+                }
+                console.log(tweets[i].text + " - " + tweets[i].created_at);
+                console.log("-------");
             }
-            console.log(tweets[i].text + " - " + tweets[i].created_at);
-            console.log("-------");
+        } else {
+            // Seit dem letzten mal suchen sind keine neuen Tweets eingetroffen.
         }
     }
 };
+
+setInterval(tryToGetData, 10000);
