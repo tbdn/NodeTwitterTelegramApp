@@ -15,7 +15,7 @@ function gotData(err, data, response) {
     for(var i=0; i < tweets.length; i++) {
         if(!tweets[i].retweeted_status) {
             if(tweets[i].truncated) {
-                console.info("Tweet - Truncated. Visit full tweet at http://www.twitter.com/statuses/" + tweets[i].id_str);
+                console.info("Tweet automatically Truncated.");
             }
             console.log(tweets[i].text + " - " + tweets[i].created_at);
             console.log("-------");
