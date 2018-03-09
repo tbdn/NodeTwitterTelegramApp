@@ -4,8 +4,8 @@ var config = require('./configs/twitter');
 var Twitter = new twit(config);
 
 var params = {
-    q: '#Linie10',
-    count: 2
+    q: '#Linie3 OR #Linie7 OR #Linie10 OR #Linie17',
+    count: 10
 };
 
 Twitter.get('search/tweets', params, gotData);
