@@ -4,13 +4,12 @@ const TELEGRAM_TOKEN = require('./configs/telegram').telegram_token;
 const TELEGRAM_BASE_URL = 'https://api.telegram.org/bot'+TELEGRAM_TOKEN;
 var debugger_chat_ids = new Set();
 
+var lines = [];
+
 var offset = -1;
 console.log("Bot online");
-do{
-    offset = generateOffset();
-    setTimeout(function(){},1000);
-}while(offset<0);
-console.log("Offset found");
+generateOffset();
+console.log("Offset found: "+offset);
 setInterval(getUpdates, TIMER);
 
 /**
@@ -24,7 +23,7 @@ function update(){
  */
 
 function generateOffset(){
-    https.get(TELEGRAM_BASE_URL+'/getUpdates?offset='+offset, function(response) {
+    https.get(TELEGRAM_BASE_URL+'/getUpdates', function(response) {
 
         data = '';
 
@@ -34,8 +33,14 @@ function generateOffset(){
 
         response.on('end', function(){
             result = JSON.parse(data).result;
-            if(result == null || result.length == 0)return -1;
-            return result[result.length-1].update_id+1;
+
+            if(result == null || result.length == 0){
+                console.log("result is "+JSON.stringify(result, null, 4));
+                offset = -1;
+                return;
+            }
+            offset = result[result.length-1].update_id+1;
+            console.log("offset set to "+offset);
         });
 
 
@@ -85,7 +90,23 @@ function parseUpdates(results){
             message(result.message.chat.id, "This bot is currently not functional and will only respond to this command (maybe)");
         }
         */
-        if(result.message.text == '/getUpdates') {
+        if(result.message.text.includes("/addLines")){
+            console.log("adding lines");
+            lines_raw = result.message.text.replace("/addLines","").replace(" ","").split(",");
+            for(i of lines_raw){
+                console.log("adding "+i);
+                addLine(result.message.chat.id,i);
+            }
+        }
+        else if(result.message.text.includes('/alert')){
+            console.log("alerting lines");
+            lines_raw = result.message.text.replace("/alert","").replace(" ","").split(",");
+            for(i of lines_raw){
+                console.log("alerting "+i);
+                alert(i,"Linie "+i+" war wohl von erixx.");
+            }
+        }
+        else if(result.message.text == '/getUpdates') {
             message(result.message.chat.id, "Test");
         }
         else{
@@ -102,6 +123,20 @@ function parseUpdates(results){
         }
     }
     offset = results[results.length-1].update_id+1;
+}
+
+function alert(line, text) {
+    console.log("lines: "+JSON.stringify(lines));
+    for(id of lines[line]){
+        message(id, text);
+    }
+}
+
+function addLine(user_id, line){
+    if(lines[line] == undefined || lines[line] == null){
+        lines[line] = [];
+    }
+    lines[line].push(user_id);
 }
 
 function message(chat_id, text){
