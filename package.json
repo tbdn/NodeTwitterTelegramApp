@@ -1,9 +1,9 @@
 {
   "name": "nodetwittertelegramapp",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node main_app.js"
   },
   "dependencies": {
   }
