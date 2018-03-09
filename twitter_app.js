@@ -11,7 +11,6 @@ var params = {
 var knownTweets = [];
 
 function tryToGetData() {
-    console.info("Ich versuche Tweets zu suchen.");
     Twitter.get('search/tweets', params, gotData);
 }
 
