@@ -1,6 +1,6 @@
 const https = require('https');
 const TIMER = 1000;
-const TELEGRAM_TOKEN = require('./config/config').telegram_token;
+const TELEGRAM_TOKEN = require('./configs/telegram').telegram_token;
 const TELEGRAM_BASE_URL = 'https://api.telegram.org/bot'+TELEGRAM_TOKEN;
 var debugger_chat_ids = new Set();
 
@@ -71,6 +71,7 @@ function parseUpdates(results){
     for (key in results){
         result = results[key];
         console.log(JSON.stringify(result, null, 4));
+        /*
         if(result.message.text == '/debug_start'){
             console.log("new debugger joined: "+result.message.from.username);
             debugger_chat_ids.add(result.message.chat.id);
@@ -83,8 +84,12 @@ function parseUpdates(results){
             console.log("sending help to: "+result.message.from.username);
             message(result.message.chat.id, "This bot is currently not functional and will only respond to this command (maybe)");
         }
+        */
+        if(result.message.text == '/getUpdates') {
+            message(result.message.chat.id, "Test");
+        }
         else{
-            message(result.message.chat.id, "I'm just ignoring your random jibberish "+result.message.from.first_name);
+            message(result.message.chat.id, "Unbekannter Command von "+result.message.from.first_name);
         }
     }
     for (key in results){
