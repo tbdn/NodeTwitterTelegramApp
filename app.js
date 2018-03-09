@@ -5,7 +5,7 @@ var Twitter = new twit(config);
 
 var params = {
     q: '#Linie3 OR #Linie7 OR #Linie10 OR #Linie17',
-    count: 10
+    result_type: 'recent'
 };
 
 Twitter.get('search/tweets', params, gotData);
@@ -13,6 +13,8 @@ Twitter.get('search/tweets', params, gotData);
 function gotData(err, data, response) {
     var tweets = data.statuses;
     for(var i=0; i < tweets.length; i++) {
-        console.log(tweets[i].text);
+        if(!tweets[i].retweeted_status) {
+            console.log(tweets[i].text);
+        }
     }
 };
