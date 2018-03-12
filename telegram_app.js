@@ -116,7 +116,7 @@ function command(user, command, parameters){
             message(user, "Notifications activated.");
             break;
         case "/pause":
-            activeUsers.remove(user);
+            activeUsers.delete(user);
             message(user, "Notifications paused. Use `/active` to reactivate notifications.");
             break;
         case "/help":
