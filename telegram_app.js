@@ -5,11 +5,9 @@ const TELEGRAM_BASE_URL = 'https://api.telegram.org/bot'+TELEGRAM_TOKEN;
 
 var lines = [];
 var activeUsers = new Set();
-var offset = -1;
+var offset = undefined;
 console.log("Bot online");
 generateOffset();
-console.log("Offset found: "+offset);
-setInterval(getUpdates, TIMER);
 
 /**
  * get the last updates from telegram
@@ -24,21 +22,24 @@ function generateOffset(){
         });
 
         response.on('end', function(){
+            console.log("Generating offset");
             result = JSON.parse(data).result;
 
             if(result == null || result.length == 0){
                 console.log("result is "+JSON.stringify(result, null, 4));
                 offset = -1;
-                return;
+            }else{
+                offset = result[result.length-1].update_id+1;
+                console.log("offset set to "+offset);
             }
-            offset = result[result.length-1].update_id+1;
-            console.log("offset set to "+offset);
+            setTimeout(getUpdates, TIMER);
         });
 
 
     }).on("error", function(err){
         console.log("error while receiving updates: "+err.message);
     });
+
 }
 
 function getUpdates() {
@@ -52,6 +53,7 @@ function getUpdates() {
 
         response.on('end', function(){
             parseUpdates(JSON.parse(data).result);
+            setTimeout(getUpdates, TIMER);
         });
 
 
@@ -67,34 +69,14 @@ function parseUpdates(results){
     for (key in results){
         result = results[key];
         console.log(JSON.stringify(result, null, 4));
-
+        if(result.message == undefined)continue;
         raw = result.message.text.split(" ");
         command(result.message.chat.id,raw[0],raw.slice(1));
 
-        /*if(result.message.text.includes("/addLines")){
-            console.log("adding lines");
-            lines_raw = result.message.text.replace("/addLines","").replace(" ","").split(",");
-            for(i of lines_raw){
-                console.log("adding "+i);
-                addLine(result.message.chat.id,i);
-            }
-        }
-        else if(result.message.text.includes('/alert')){
-            console.log("alerting lines");
-            lines_raw = result.message.text.replace("/alert","").replace(" ","").split(",");
-            for(i of lines_raw){
-                console.log("alerting "+i);
-                alert(i,"Linie "+i+" war wohl von erixx.");
-            }
-        }
-        else if(result.message.text == '/getUpdates') {
-            message(result.message.chat.id, "Test");
-        }
-        else{
-            message(result.message.chat.id, "Unbekannter Command von "+result.message.from.first_name);
-        }*/
+
     }
     offset = results[results.length-1].update_id+1;
+
 }
 
 /**
@@ -106,16 +88,28 @@ function parseUpdates(results){
 function command(user, command, parameters){
     switch(command){
         case "/add":
-            for(line of parameters){
-                addLine(user, line);
+            if(parameters == null || parameters == undefined || parameters.length == 0 || !onlyNumbers(parameters)){
+                message(user, "Parameters must be numbers and can't be empty.");
+
+            }else{
+                for(line of parameters){
+                    addLine(user, line);
+                }
+                message(user, "Added "+parameters.toString().replace(" ",",")+" to your subscribed lines.");
+
             }
-            message(user, "Added "+parameters.toString().replace(" ",",")+" to your subscribed lines.");
             break;
         case "/remove":
-            for(line of parameters){
-                removeLine(user, line);
+            if(parameters == null || parameters == undefined || parameters.length == 0 || !onlyNumbers(parameters)){
+                message(user, "Parameters must be numbers and can't be empty.");
+
+            }else{
+                for(line of parameters){
+                    removeLine(user, line);
+                }
+                message(user, "Removed "+parameters.toString().replace(" ",",")+" from your subscribed lines.");
+
             }
-            message(user, "Removed "+parameters.toString().replace(" ",",")+" from your subscribed lines.");
             break;
         case "/active":
             activeUsers.add(user);
@@ -135,9 +129,10 @@ function command(user, command, parameters){
             break;
         case "/alert":
             for(line of parameters){
-                alert(line, "Alarm für Cobra "+line);
+
+                alert(line, "Alarm fuer Cobra "+line);
             }
-            message(user, "The subscribers of the lines "+parameters.toString().replace(" ",",")+" have been alerted.");
+            //message(user, "The subscribers of the lines "+parameters.toString().replace(" ",",")+" have been alerted.");
             break;
         default:
             message(user, "Unknown command.");
@@ -145,12 +140,20 @@ function command(user, command, parameters){
     }
 }
 
+function onlyNumbers(parameters){
+    for(p of parameters){
+        if(isNaN(p))return false;
+    }
+    return true;
+}
+
 function alert(line, text) {
     if(lines[line] == null || lines[line] == undefined)return;
     for(id of lines[line]){
         console.log("Trying to alert "+id);
+        console.log("Is user active: "+activeUsers.has(id));
         if(activeUsers.has(id)){
-            console.log("Alerting "+id);
+            console.log("Alerting "+id+"|");
             message(id, text);
         }
     }
@@ -160,6 +163,7 @@ function addLine(user_id, line){
     if(lines[line] == undefined || lines[line] == null){
         lines[line] = [];
     }
+
     lines[line].push(user_id);
 }
 
@@ -179,6 +183,7 @@ function getLinesForUser(user_id){
 }
 
 function message(chat_id, text){
+    console.log("Sending message \""+text+"\" to "+chat_id);
     https.get(TELEGRAM_BASE_URL+'/sendMessage?chat_id='+chat_id+'&text='+text, function(){}).on('error', function(err){
         console.log("error while sending message: "+err.message);
     });
