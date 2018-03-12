@@ -5,7 +5,10 @@ const TELEGRAM_BASE_URL = 'https://api.telegram.org/bot'+TELEGRAM_TOKEN;
 
 var lines = [];
 var activeUsers = new Set();
+var observedLines = new Set();
 var offset = undefined;
+
+
 console.log("Bot online");
 generateOffset();
 
@@ -163,15 +166,21 @@ function addLine(user_id, line){
     if(lines[line] == undefined || lines[line] == null){
         lines[line] = [];
     }
-
+    observedLines.add(line);
     lines[line].push(user_id);
 }
 
 function removeLine(user_id, line){
     if(lines[line] == undefined || lines[line] == null || lines[line].indexOf(user_id) == -1){
         return;
+    }else if(lines[line].length == 0 && observedLines.has(line)){
+        observedLines.delete(line);
     }
     lines[line].splice(lines[line].indexOf(user_id),1);
+}
+
+function getObservedLines(){
+    return observedLines;
 }
 
 function getLinesForUser(user_id){
