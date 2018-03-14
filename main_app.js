@@ -40,8 +40,9 @@ var outputStuff = function (err, data, response) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
                 for(line of observedLines){
-                    if(tweets[i].text.search("#Linie"+line )) {
+                    if(tweets[i].text.includes("#Linie"+line )) {
                         Telegram.alert(line, tweets[i].text);
+                        break;
                     }
                 }
             }
