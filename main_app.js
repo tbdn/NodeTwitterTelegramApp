@@ -4,6 +4,7 @@ var Telegram = require('./telegram_app');
 var knownTweets = [];
 var observedLines = Telegram.observed();
 var searchString;
+var needToAlert = [];
 
 /*
  * 1) Telegram aufrufen und nach nötigen Linien Fragen
@@ -15,6 +16,9 @@ var searchString;
 var getSearchQuery = function (observedLines) {
     searchString = "";
     observedLines.forEach(function (value) {
+        if(!needToAlert.includes(value)) {
+            needToAlert.push(value)
+        }
         searchString += "#Linie" + value + " OR ";
     });
 };
@@ -39,8 +43,19 @@ var outputStuff = function (err, data, response) {
         if(!knownTweets.includes(tweets[i].id_str)) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
+                for(var k = 0; k < needToAlert.length; k++) {
+                    if(tweets[i].text.search("#Line"+needToAlert[k])) {
+                        console.log("Alert an " + needToAlert[k] + " FÜR " + tweets[i]);
+                        Telegram.alertLine(needToAlert[k], tweets[i].text);
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+                /*
                 var message = tweets[i].text + " - " + tweets[i].created_at;
                 Telegram.broadcast(message);
+                 */
             }
         } else {
             // Seit dem letzten mal suchen sind keine neuen Tweets eingetroffen.
