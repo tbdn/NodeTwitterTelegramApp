@@ -206,7 +206,32 @@ function getLinesForUser(user_id){
 
 function message(chat_id, text){
     console.log("Sending message \""+text+"\" to "+chat_id);
-    https.get(TELEGRAM_BASE_URL+'/sendMessage?chat_id='+chat_id+'&text='+text, function(){}).on('error', function(err){
-        console.log("error while sending message: "+err.message);
+
+    jsonMessage = JSON.stringify({
+        chat_id: chat_id,
+        text: text,
+        parse_mode: 'HTML'
     });
+
+    postheaders = {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(jsonMessage, 'utf8')
+    };
+
+    options = {
+        hostname: 'api.telegram.org',
+        path: '/bot'+TELEGRAM_TOKEN+'/sendMessage',
+        method: 'POST',
+        headers: postheaders
+    };
+
+    request = https.request(options, function(res){});
+    request.write(jsonMessage);
+    request.end();
+    request.on('error', function(e){
+       console.error(e);
+    });
+    /*https.get(TELEGRAM_BASE_URL+'/sendMessage?chat_id='+chat_id+'&text='+text, function(){}).on('error', function(err){
+        console.log("error while sending message: "+err.message);
+    });*/
 }
