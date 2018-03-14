@@ -45,7 +45,6 @@ var outputStuff = function (err, data, response) {
             if(!tweets[i].retweeted_status) {
                 for(var k = 0; k < needToAlert.length; k++) {
                     if(tweets[i].text.search("#Line"+needToAlert[k])) {
-                        console.log("Alert an " + needToAlert[k] + " FÜR " + tweets[i]);
                         Telegram.alertLine(needToAlert[k], tweets[i].text);
                         break;
                     } else {
