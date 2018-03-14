@@ -75,7 +75,7 @@ function parseUpdates(results){
     //console.log("Parsing results: "+JSON.stringify(results, null, 4));
     for (key in results){
         result = results[key];
-        console.log(JSON.stringify(result, null, 4));
+        //console.log(JSON.stringify(result, null, 4));
         if(result.message == undefined)continue;
         raw = result.message.text.split(" ");
         command(result.message.chat.id,raw[0],raw.slice(1));
