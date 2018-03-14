@@ -2,6 +2,8 @@ module.exports.observed = getObservedLines;
 module.exports.broadcast = broadcast;
 module.exports.alertLine = alert;
 
+
+const BOTNAME = "UestraAlerts";
 const https = require('https');
 const TIMER = 1000;
 const TELEGRAM_TOKEN = require('./configs/telegram').telegram_token;
@@ -93,6 +95,7 @@ function parseUpdates(results){
  * @param parameters remaining part of the message, split at spaces
  */
 function command(user, command, parameters){
+    if(command.includes("@"+BOTNAME))command = command.split("@")[0];
     switch(command){
         case "/add":
             if(parameters == null || parameters == undefined || parameters.length == 0 || !onlyNumbers(parameters)){
