@@ -1,7 +1,9 @@
 var Twitter = require('./twitter_app');
-//var Telegram = require('./telegram_app');
+var Telegram = require('./telegram_app');
 
 var knownTweets = [];
+var observedLines = Telegram.observed();
+var searchString;
 
 /*
  * 1) Telegram aufrufen und nach nötigen Linien Fragen
@@ -10,6 +12,28 @@ var knownTweets = [];
  * 4) Wenn neues Ereignis -> Telegram triggern
  */
 
+var getSearchQuery = function (observedLines) {
+    searchString = "";
+    observedLines.forEach(function (value) {
+        searchString += "#Linie" + value + " OR ";
+    });
+};
+
+var initTwitterCall = function () {
+    if(observedLines) {
+        getSearchQuery(observedLines);
+        console.log(searchString);
+    } else {
+        observedLines = Telegram.observed();
+    }
+
+    if(searchString) {
+        var tweets = Twitter.init(searchString, outputStuff);
+        console.log(tweets);
+        //Telegram.broadcast(tweets);
+    }
+};
+
 var outputStuff = function (err, data, response) {
     var tweets = data.statuses;
     for(var i=0; i < tweets.length; i++) {
@@ -17,19 +41,19 @@ var outputStuff = function (err, data, response) {
         if(!knownTweets.includes(tweets[i].id_str)) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
+                /*
                 if(tweets[i].truncated) {
                     console.info("Tweet automatically Truncated.");
                 }
-                console.log(tweets[i].text + " - " + tweets[i].created_at);
-                console.log("-------");
+                 */
+                var message = tweets[i].text + " - " + tweets[i].created_at;
+                Telegram.broadcast(message);
             }
         } else {
-            console.log("Kein neuer Tweet");
+            //console.log("Kein neuer Tweet");
             // Seit dem letzten mal suchen sind keine neuen Tweets eingetroffen.
         }
     }
 };
 
-var searchString = "#Linie10";
-var tweets = Twitter.init(searchString, outputStuff);
-
+setInterval(initTwitterCall, 10000);
