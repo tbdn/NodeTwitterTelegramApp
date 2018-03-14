@@ -1,3 +1,7 @@
+module.exports.observed = getObservedLines;
+module.exports.broadcast = broadcast;
+module.exports.alertLine = alert;
+
 const https = require('https');
 const TIMER = 1000;
 const TELEGRAM_TOKEN = require('./configs/telegram').telegram_token;
@@ -132,10 +136,12 @@ function command(user, command, parameters){
             break;
         case "/alert":
             for(line of parameters){
-
                 alert(line, "Alarm fuer Cobra "+line);
             }
             //message(user, "The subscribers of the lines "+parameters.toString().replace(" ",",")+" have been alerted.");
+            break;
+        case "/broadcast":
+            broadcast("BROTKAST: "+parameters.join(" "));
             break;
         default:
             message(user, "Unknown command.");
@@ -162,7 +168,14 @@ function alert(line, text) {
     }
 }
 
+function broadcast(text){
+    for(id of activeUsers){
+        message(id, text);
+    }
+}
+
 function addLine(user_id, line){
+    activeUsers.add(user_id);
     if(lines[line] == undefined || lines[line] == null){
         lines[line] = [];
     }
