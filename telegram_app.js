@@ -1,6 +1,6 @@
-module.exports.observed = getObservedLines;
+module.exports.getObservedLines = getObservedLines;
 module.exports.broadcast = broadcast;
-module.exports.alertLine = alert;
+module.exports.alert = alert;
 
 
 const BOTNAME = "UestraAlerts";

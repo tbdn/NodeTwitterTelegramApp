@@ -2,7 +2,7 @@ var Twitter = require('./twitter_app');
 var Telegram = require('./telegram_app');
 
 var knownTweets = [];
-var observedLines = Telegram.observed();
+var observedLines = Telegram.getObservedLines();
 var searchString;
 var needToAlert = [];
 
@@ -28,7 +28,7 @@ var initTwitterCall = function () {
         getSearchQuery(observedLines);
         console.log(searchString);
     } else {
-        observedLines = Telegram.observed();
+        observedLines = Telegram.getObservedLines();
     }
 
     if(searchString) {
@@ -45,7 +45,7 @@ var outputStuff = function (err, data, response) {
             if(!tweets[i].retweeted_status) {
                 for(var k = 0; k < needToAlert.length; k++) {
                     if(tweets[i].text.search("#Line"+needToAlert[k])) {
-                        Telegram.alertLine(needToAlert[k], tweets[i].text);
+                        Telegram.alert(needToAlert[k], tweets[i].text);
                         break;
                     } else {
                         continue;
