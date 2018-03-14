@@ -137,6 +137,9 @@ function command(user, command, parameters){
         case "/subscribed":
             message(user, "You are currently subscribed to: "+getLinesForUser(user));
             break;
+        case "/start":
+            message(user, "Welcome to the UestraAlertsBot. You can subscribe to a line using /add (e.g. /add 1) and activate/pause bot messages with /active and /pause.")
+            break;
         case "/alert":
             for(line of parameters){
                 alert(line, "Alarm fuer Cobra "+line);
