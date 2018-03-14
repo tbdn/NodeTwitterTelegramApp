@@ -39,16 +39,10 @@ var outputStuff = function (err, data, response) {
         if(!knownTweets.includes(tweets[i].id_str)) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
-                /*
-                if(tweets[i].truncated) {
-                    console.info("Tweet automatically Truncated.");
-                }
-                 */
                 var message = tweets[i].text + " - " + tweets[i].created_at;
                 Telegram.broadcast(message);
             }
         } else {
-            //console.log("Kein neuer Tweet");
             // Seit dem letzten mal suchen sind keine neuen Tweets eingetroffen.
         }
     }
