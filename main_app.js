@@ -29,8 +29,6 @@ var initTwitterCall = function () {
 
     if(searchString) {
         var tweets = Twitter.init(searchString, outputStuff);
-        console.log(tweets);
-        //Telegram.broadcast(tweets);
     }
 };
 
