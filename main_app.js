@@ -39,15 +39,11 @@ var outputStuff = function (err, data, response) {
         if(!knownTweets.includes(tweets[i].id_str)) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
-                observedLines.forEach(function (value) {
-                    if(tweets[i].text.search("#Linie"+value )) {
-                        Telegram.alert(value, tweets[i].text);
+                for(line of observedLines){
+                    if(tweets[i].text.search("#Linie"+line )) {
+                        Telegram.alert(line, tweets[i].text);
                     }
-                });
-                /*
-                var message = tweets[i].text + " - " + tweets[i].created_at;
-                Telegram.broadcast(message);
-                 */
+                }
             }
         } else {
             // Seit dem letzten mal suchen sind keine neuen Tweets eingetroffen.
