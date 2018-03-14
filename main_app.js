@@ -28,7 +28,7 @@ var initTwitterCall = function () {
     }
 
     if(searchString) {
-        var tweets = Twitter.init(searchString, outputStuff);
+        Twitter.init(searchString, outputStuff);
     }
 };
 
