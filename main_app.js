@@ -4,7 +4,6 @@ var Telegram = require('./telegram_app');
 var knownTweets = [];
 var observedLines = Telegram.getObservedLines();
 var searchString;
-var needToAlert = [];
 
 /*
  * 1) Telegram aufrufen und nach nötigen Linien Fragen
@@ -16,9 +15,6 @@ var needToAlert = [];
 var getSearchQuery = function (observedLines) {
     searchString = "";
     observedLines.forEach(function (value) {
-        if(!needToAlert.includes(value)) {
-            needToAlert.push(value)
-        }
         searchString += "#Linie" + value + " OR ";
     });
 };
@@ -43,14 +39,11 @@ var outputStuff = function (err, data, response) {
         if(!knownTweets.includes(tweets[i].id_str)) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
-                for(var k = 0; k < needToAlert.length; k++) {
-                    if(tweets[i].text.search("#Linie"+needToAlert[k])) {
-                        Telegram.alert(needToAlert[k], tweets[i].text);
-                        break;
-                    } else {
-                        continue;
+                observedLines.forEach(function (value) {
+                    if(tweets[i].text.search("#Linie"+value )) {
+                        Telegram.alert(value, tweets[i].text);
                     }
-                }
+                });
                 /*
                 var message = tweets[i].text + " - " + tweets[i].created_at;
                 Telegram.broadcast(message);
