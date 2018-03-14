@@ -14,6 +14,11 @@ var activeUsers = new Set();
 var observedLines = new Set();
 var offset = undefined;
 
+process.on('SIGINT', function(){
+   broadcast("The bot is shutting down now, good night :)");
+   setTimeout(process.exit,1000);
+});
+
 
 console.log("Bot online");
 generateOffset();
