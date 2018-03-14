@@ -15,6 +15,4 @@ var performApiCall = function (params, callback) {
     Twitter.get('search/tweets', params, callback);
 };
 
-//setInterval(tryToGetData, 10000);
-
 module.exports.init = init;

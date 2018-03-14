@@ -44,7 +44,7 @@ var outputStuff = function (err, data, response) {
             knownTweets.push(tweets[i].id_str);
             if(!tweets[i].retweeted_status) {
                 for(var k = 0; k < needToAlert.length; k++) {
-                    if(tweets[i].text.search("#Line"+needToAlert[k])) {
+                    if(tweets[i].text.search("#Linie"+needToAlert[k])) {
                         Telegram.alert(needToAlert[k], tweets[i].text);
                         break;
                     } else {
