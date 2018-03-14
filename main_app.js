@@ -48,4 +48,7 @@ var outputStuff = function (err, data, response) {
     }
 };
 
+//DEBUG: 1 Minute pro Abruf-Zyklus
 setInterval(initTwitterCall, 10000);
+// 5 Minuten pro Abruf-Zyklus
+//setInterva(initTwitterCall, 300000);
