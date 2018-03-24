@@ -1,5 +1,8 @@
 module.exports.getObservedLines = getObservedLines;
 module.exports.getActiveUsers = getActiveUsers;
+
+module.exports.saveUser = getLinesForUserSaveable;
+
 module.exports.broadcast = broadcast;
 module.exports.alert = alert;
 
@@ -203,6 +206,15 @@ function getObservedLines(){
 
 function getActiveUsers() {
     return activeUsers;
+}
+
+function getLinesForUserSaveable(user_id){
+    userLines = [];
+    userLines.push(user_id);
+    for(line in lines){
+        if(lines[line] != undefined && lines[line].includes(user_id))userLines.push(line);
+    }
+    return userLines;
 }
 
 function getLinesForUser(user_id){

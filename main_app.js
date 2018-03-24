@@ -1,5 +1,6 @@
 var Twitter = require('./twitter_app');
 var Telegram = require('./telegram_app');
+var fs = require('fs');
 
 var knownTweets = [];
 var observedLines = Telegram.getObservedLines();
@@ -56,3 +57,20 @@ var outputStuff = function (err, data, response) {
 setInterval(initTwitterCall, 10000);
 // 5 Minuten pro Abruf-Zyklus
 //setInterva(initTwitterCall, 300000);
+
+process.on('SIGINT', function(){
+    Telegram.broadcast("The bot is shutting down now, good night :)");
+
+    var au = Telegram.getActiveUsers();
+    if(au) {
+        console.log("Telegram.activeUsers_set : ");
+        au.forEach(function (user) {
+            fs.appendFile('./saved/activeUsers.json', Telegram.saveUser(user) + '\n', function (err) {
+                if(err) {
+                    throw err;
+                }
+            })
+        });
+    }
+setTimeout(process.exit,1000);
+});
