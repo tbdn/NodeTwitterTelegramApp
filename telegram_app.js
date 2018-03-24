@@ -1,7 +1,7 @@
 module.exports.getObservedLines = getObservedLines;
+module.exports.getActiveUsers = getActiveUsers;
 module.exports.broadcast = broadcast;
 module.exports.alert = alert;
-
 
 const BOTNAME = "UestraAlerts";
 const https = require('https');
@@ -13,12 +13,6 @@ var lines = [];
 var activeUsers = new Set();
 var observedLines = new Set();
 var offset = undefined;
-
-process.on('SIGINT', function(){
-   broadcast("The bot is shutting down now, good night :)");
-   setTimeout(process.exit,1000);
-});
-
 
 console.log("Bot online");
 generateOffset();
@@ -205,6 +199,10 @@ function removeLine(user_id, line){
 
 function getObservedLines(){
     return observedLines;
+}
+
+function getActiveUsers() {
+    return activeUsers;
 }
 
 function getLinesForUser(user_id){
