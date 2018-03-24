@@ -63,7 +63,6 @@ process.on('SIGINT', function(){
 
     var au = Telegram.getActiveUsers();
     if(au) {
-        console.log("Telegram.activeUsers_set : ");
         au.forEach(function (user) {
             fs.appendFile('./saved/activeUsers.json', Telegram.saveUser(user) + '\n', function (err) {
                 if(err) {
